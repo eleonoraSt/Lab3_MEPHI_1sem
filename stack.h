@@ -28,6 +28,6 @@ void deleteStack(Stack *stack);
 
 int stackLength(Stack *stack);
 
-short moveStack(Stack *source, Stack *goal, int size);
+short moveStack(Stack *source, Stack **goal, int size);
 
 #endif // STACK_H_INCLUDED

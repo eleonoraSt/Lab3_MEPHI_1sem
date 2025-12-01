@@ -58,13 +58,13 @@ int stackLength(Stack *stack) {
     return length;
 }
 
-short moveStack(Stack *source, Stack *goal, int size) {
-    if (createStack(deleteElem(source), &goal) == MEMORY_ERR){
+short moveStack(Stack *source, Stack **goal, int size) {
+    if (createStack(deleteElem(source), goal) == MEMORY_ERR){
         return MEMORY_ERR;
     }
     for (int i = 1; i < size; i++) {
-        if (addElem(deleteElem(source), goal) == MEMORY_ERR) {
-            deleteStack(goal);
+        if (addElem(deleteElem(source), *goal) == MEMORY_ERR) {
+            deleteStack(*goal);
             return MEMORY_ERR;
         }
     }
