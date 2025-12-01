@@ -18,7 +18,7 @@ enum ERRORS {
     INPUT_END = 3
 };
 
-short createStack(int val, Stack **stack);
+short createStack(Stack **stack);
 
 short addElem(int val, Stack *stack);
 

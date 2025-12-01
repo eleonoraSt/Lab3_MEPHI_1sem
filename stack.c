@@ -1,20 +1,14 @@
 #include <stdlib.h>
 #include "stack.h"
 
-short createStack(int val, Stack **stack) {
+short createStack(Stack **stack) {
     // Создаёт стек по адресу stack с первым элементом val, возвращает код ошибки
     *stack = malloc(sizeof(Stack));
     if (*stack == NULL) {
         return MEMORY_ERR;
     }
-    (*stack)->p = malloc(sizeof(Elem));
-    if ((*stack)->p == NULL) {
-        free(*stack);
-        return MEMORY_ERR;
-    }
-    (*stack)->p->val = val;
-    (*stack)->p->link = NULL;
-    (*stack)->top = stack->p;
+    (*stack)->top = NULL;
+    (*stack)->p = NULL;
     return OK;
 }
 
@@ -62,7 +56,7 @@ short moveStack(Stack *source, Stack **goal, int size) {
     if (createStack(deleteElem(source), goal) == MEMORY_ERR){
         return MEMORY_ERR;
     }
-    for (int i = 1; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         if (addElem(deleteElem(source), *goal) == MEMORY_ERR) {
             deleteStack(*goal);
             return MEMORY_ERR;
