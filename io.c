@@ -4,14 +4,16 @@
 
 #define MAX_INT_STR_LEN 12  // Больше без переполнения не будет, с учётом минуса и нуль-терминатора
 #define FSCANF_FORMAT "%11s"  // Зависит от макс длины строки с числом
+#define MAX_ROW_STR_LEN 1201 // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними, \n и нуль-терминатором
 
-short integerRowInput(Stack *addTo, FILE *file) {
-    // Ввод ряда целых чисел
+short integerRowInput(Stack *addTo, FILE *source, FILE *save) {
+    // Ввод ряда целых чисел из потока source, запись в стек addTo и в файл save
     int toWrite = 0;
     short correctInput = 0, length = 0;
-    char strbuf[MAX_INT_STR_LEN], strcheck[MAX_INT_STR_LEN];
+    char rowbuf[MAX_ROW_STR_LEN], strbuf[MAX_INT_STR_LEN], strcheck[MAX_INT_STR_LEN];
     char charbuf[2];
-    correctInput = fscanf(file, FSCANF_FORMAT, strbuf);  // Буфер используется для проверки переполнения при вводе
+    fgets(rowbuf, MAX_ROW_STR_LEN, source);
+    correctInput = sscanf(rowbuf, FSCANF_FORMAT, strbuf);  // Буфер используется для проверки переполнения при вводе
     while (correctInput == 1) {  // Написать тут нормальное условие конца чтения файла
         length = strlen(strbuf);
         correctInput = sscanf(strbuf, "%d", &toWrite);
@@ -25,7 +27,10 @@ short integerRowInput(Stack *addTo, FILE *file) {
             if (addElem(toWrite, addTo) == MEMORY_ERR) {
                 return MEMORY_ERR;
             }
-            fscanf(file, FSCANF_FORMAT, strbuf);
+            if (save) {  // Сюда может быть передан NULL, тогда печати не будет
+                fprintf(save, "%d ", toWrite);
+            }
+            correctInput = sscanf(rowbuf, FSCANF_FORMAT, strbuf);
             continue;
         }
         puts("Ошибка при вводе ряда");

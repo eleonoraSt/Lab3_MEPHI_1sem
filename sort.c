@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "sort.h"
 
 short insertionSort(Stack *stack) {
     Elem *current = stack->top, *compareWith = 0;
@@ -64,6 +65,8 @@ short mergeSort(Stack *stack, int step) {
         return MEMORY_ERR;
     }
     if (mergeSort(firstSubstack, step + 1) == MEMORY_ERR || mergeSort(secondSubstack, step + 1) == MEMORY_ERR) {
+        deleteStack(firstSubstack);
+        deleteStack(secondSubstack);
         return MEMORY_ERR;
     }
     while (firstSubstack->top != NULL || secondSubstack->top != NULL) {
