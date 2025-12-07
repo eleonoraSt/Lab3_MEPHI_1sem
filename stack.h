@@ -14,8 +14,7 @@ typedef struct {
 enum ERRORS {
     OK = 0,
     MEMORY_ERR = 1,
-    INPUT_ERR = 2,
-    INPUT_END = 3
+    INPUT_ERR = 2
 };
 
 short createStack(Stack **stack);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stack.h"
+#include "io.h"
 
 #define MAX_INT_STR_LEN 12  // Больше без переполнения не будет, с учётом минуса и нуль-терминатора
 #define FSCANF_FORMAT "%11s"  // Зависит от макс длины строки с числом
