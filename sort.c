@@ -19,7 +19,7 @@ short insertionSort(Stack *stack) {
         if (compareWith == current) {  // Не надо двигать current
             continue;
         }
-        if (createStack(beforeCurrent) == NULL) {
+        if (createStack(&beforeCurrent) == NULL) {
             return MEMORY_ERR;
         }
         if (moveStack(stack, beforeCurrent, compareWithIndex) == MEMORY_ERR) {  // Убираем до compareWith
@@ -27,7 +27,7 @@ short insertionSort(Stack *stack) {
             return MEMORY_ERR;
         }
         bufCompareWith = deleteElem(stack);  // Убираем compareWith
-        if (createStack(afterCurrent) == NULL) {
+        if (createStack(&afterCurrent) == NULL) {
             deleteStack(beforeCurrent);
             return MEMORY_ERR;
         }

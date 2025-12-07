@@ -1,3 +1,5 @@
+.PHONY: clean
+
 stack.o: stack.c
 	gcc -c -o stack.o stack.c
 
@@ -12,3 +14,6 @@ main.o: main.c
 
 stack: stack.o sort.o io.o main.o
 	gcc -o stack stack.o sort.o io.o main.o
+
+clean:
+	del *.o *.exe test.txt

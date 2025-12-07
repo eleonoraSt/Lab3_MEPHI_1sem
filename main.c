@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
             }
             puts("Введите ряд чисел через пробел");
             inputRes = integerRowInput(stack, stdin, rowFile);
-            if (inputRes) == MEMORY_ERR) {
+            if (inputRes == MEMORY_ERR) {
                 puts("Не хватает памяти при создании стека");
                 deleteStack(stack);
                 continue;
@@ -85,31 +85,31 @@ int main(int argc, char *argv[]) {
         }
         // Вводим изначальный ряд
         inputRes = integerRowInput(unsorted, rowFile, NULL);
-        if (inputRes) == MEMORY_ERR) {
+        if (inputRes == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
             deleteStack(unsorted);
             free(sorted);
-            continue;
+            return 0;
         }
         if (inputRes == INPUT_ERR) {
             puts("Ошибка ввода");
             deleteStack(unsorted);
             free(sorted);
-            continue;
+            return 0;
         }
         // Вводим отсортированный ряд
         inputRes = integerRowInput(sorted, rowFile, NULL);
-        if (inputRes) == MEMORY_ERR) {
+        if (inputRes == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
             deleteStack(unsorted);
             deleteStack(sorted);
-            continue;
+            return 0;
         }
         if (inputRes == INPUT_ERR) {
             puts("Ошибка ввода");
             deleteStack(unsorted);
             deleteStack(sorted);
-            continue;
+            return 0;
         }
         // Выводим изначальный ряд
         if (moveStack(unsorted, stack, stackLength(unsorted)) == MEMORY_ERR) {  // Т.к. при вводе он перевернулся
