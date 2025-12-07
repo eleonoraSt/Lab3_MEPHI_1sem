@@ -1,6 +1,8 @@
 #include "stack.h"
 #include "sort.h"
 
+#define NULL 0
+
 short insertionSort(Stack *stack) {
     Elem *current = stack->top, *compareWith = 0;
     Stack *beforeCurrent, *afterCurrent;
@@ -17,30 +19,39 @@ short insertionSort(Stack *stack) {
         if (compareWith == current) {  // Не надо двигать current
             continue;
         }
-        if (moveStack(stack, &beforeCurrent, compareWithIndex) == MEMORY_ERR) {
-            return MEMORY_ERR;  // beforeCurrent уже освобождён
+        if (createStack(beforeCurrent) == NULL) {
+            return MEMORY_ERR;
         }
-        bufCompareWith = deleteElem(stack);
-        if (moveStack(stack, &afterCurrent, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {
+        if (moveStack(stack, beforeCurrent, compareWithIndex) == MEMORY_ERR) {  // Убираем до compareWith
             deleteStack(beforeCurrent);
-            return MEMORY_ERR;  // afterCurrent уже освобождён
+            return MEMORY_ERR;
+        }
+        bufCompareWith = deleteElem(stack);  // Убираем compareWith
+        if (createStack(afterCurrent) == NULL) {
+            deleteStack(beforeCurrent);
+            return MEMORY_ERR;
+        }
+        if (moveStack(stack, afterCurrent, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Убираем до current
+            deleteStack(beforeCurrent);
+            deleteStack(afterCurrent);
+            return MEMORY_ERR;
         }
         bufCurrent = deleteElem(stack);
-        if (moveStack(afterCurrent, &stack, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Учесть, что после этого stack освобождён
+        if (moveStack(afterCurrent, stack, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Возвращаем после current
             deleteStack(afterCurrent);
             deleteStack(beforeCurrent);
             return MEMORY_ERR;
         }
         deleteStack(afterCurrent);
-        if (addElem(bufCompareWith, stack) == MEMORY_ERR) {
+        if (addElem(bufCompareWith, stack) == MEMORY_ERR) {  // Возвращаем compareWith
             deleteStack(beforeCurrent);
             return MEMORY_ERR;
         }
-        if (addElem(bufCurrent, stack) == MEMORY_ERR) {
+        if (addElem(bufCurrent, stack) == MEMORY_ERR) {  // Возвращаем current
             deleteStack(beforeCurrent);
             return MEMORY_ERR;
         }
-        if (moveStack(beforeCurrent, &stack, compareWithIndex) == MEMORY_ERR) {  // Учесть, что после этого stack освобождён
+        if (moveStack(beforeCurrent, stack, compareWithIndex) == MEMORY_ERR) {  // Возвращаем до compareWith
             deleteStack(beforeCurrent);
             return MEMORY_ERR;
         }
@@ -57,11 +68,20 @@ short mergeSort(Stack *stack, int step) {
     if (length == 1) {
         return OK;
     }
-    if (moveStack(stack, &firstSubstack, length / 2) == MEMORY_ERR) {
+    if (createStack(&firstSubstack) == NULL) {
         return MEMORY_ERR;
     }
-    if (moveStack(stack, &secondSubstack, length / 2 + length % 2) == MEMORY_ERR) {
+    if (moveStack(stack, firstSubstack, length / 2) == MEMORY_ERR) {
         deleteStack(firstSubstack);
+        return MEMORY_ERR;
+    }
+    if (createStack(&secondSubstack) == NULL) {
+        deleteStack(firstSubstack);
+        return MEMORY_ERR;
+    }
+    if (moveStack(stack, secondSubstack, length / 2 + length % 2) == MEMORY_ERR) {
+        deleteStack(firstSubstack);
+        deleteStack(secondSubstack);
         return MEMORY_ERR;
     }
     if (mergeSort(firstSubstack, step + 1) == MEMORY_ERR || mergeSort(secondSubstack, step + 1) == MEMORY_ERR) {
@@ -70,7 +90,7 @@ short mergeSort(Stack *stack, int step) {
         return MEMORY_ERR;
     }
     while (firstSubstack->top != NULL || secondSubstack->top != NULL) {
-        addFirst == secondSubstack->top == NULL;
+        addFirst = secondSubstack->top == NULL;
         if (!addFirst && firstSubstack->top != NULL) {  // Если оба подстека ещё не кончились
             addFirst = firstSubstack->top >= secondSubstack->top && step % 2 == 0 || firstSubstack->top < secondSubstack->top && step % 2 == 1;
         }
@@ -88,5 +108,7 @@ short mergeSort(Stack *stack, int step) {
             }
         }
     }
+    deleteStack(firstSubstack);
+    deleteStack(secondSubstack);
     return OK;
 }

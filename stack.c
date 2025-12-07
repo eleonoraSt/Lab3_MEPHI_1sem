@@ -52,13 +52,9 @@ int stackLength(Stack *stack) {
     return length;
 }
 
-short moveStack(Stack *source, Stack **goal, int size) {
-    if (createStack(goal) == MEMORY_ERR){
-        return MEMORY_ERR;
-    }
+short moveStack(Stack *source, Stack *goal, int size) {
     for (int i = 0; i < size; i++) {
-        if (addElem(deleteElem(source), *goal) == MEMORY_ERR) {
-            deleteStack(*goal);
+        if (addElem(deleteElem(source), goal) == MEMORY_ERR) {
             return MEMORY_ERR;
         }
     }
