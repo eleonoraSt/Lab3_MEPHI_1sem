@@ -41,7 +41,6 @@ void deleteStack(Stack *stack) {
     free(stack);
 }
 
-// ¬вести проверку на переполнение переменной с длинной. »ли защиту от чрезмерной длины
 int stackLength(Stack *stack) {
     int length = 1;
     Elem *current = stack->top;

@@ -92,7 +92,7 @@ short mergeSort(Stack *stack, int step) {
     while (firstSubstack->top != NULL || secondSubstack->top != NULL) {
         addFirst = secondSubstack->top == NULL;
         if (!addFirst && firstSubstack->top != NULL) {  // Если оба подстека ещё не кончились
-            addFirst = firstSubstack->top >= secondSubstack->top && step % 2 == 0 || firstSubstack->top < secondSubstack->top && step % 2 == 1;
+            addFirst = firstSubstack->top->val >= secondSubstack->top->val && step % 2 == 0 || firstSubstack->top < secondSubstack->top && step % 2 == 1;
         }
         if (addFirst) {
             if (addElem(deleteElem(firstSubstack), stack) == MEMORY_ERR) {

@@ -12,9 +12,9 @@ short integerRowInput(Stack *addTo, FILE *source, FILE *save) {
     int toWrite = 0;
     short correctInput = 0, length = 0;
     char rowbuf[MAX_ROW_STR_LEN], strbuf[MAX_INT_STR_LEN], strcheck[MAX_INT_STR_LEN];
-    char charbuf[2];
+    char *rowbufIndex = &rowbuf[0];
     fgets(rowbuf, MAX_ROW_STR_LEN, source);
-    correctInput = sscanf(rowbuf, FSCANF_FORMAT, strbuf);  // Буфер используется для проверки переполнения при вводе
+    correctInput = sscanf(rowbufIndex, FSCANF_FORMAT, strbuf);  // Буфер используется для проверки переполнения при вводе
     while (correctInput == 1) {  // Написать тут нормальное условие конца чтения файла
         length = strlen(strbuf);
         correctInput = sscanf(strbuf, "%d", &toWrite);
@@ -31,7 +31,8 @@ short integerRowInput(Stack *addTo, FILE *source, FILE *save) {
             if (save) {  // Сюда может быть передан NULL, тогда печати не будет
                 fprintf(save, "%d ", toWrite);
             }
-            correctInput = sscanf(rowbuf, FSCANF_FORMAT, strbuf);
+            rowbufIndex += strlen(strbuf) + 1;  // Сдвиг, чтобы не зациклиться на одном элементе
+            correctInput = sscanf(rowbufIndex, FSCANF_FORMAT, strbuf);
             continue;
         }
         puts("Ошибка при вводе ряда");
