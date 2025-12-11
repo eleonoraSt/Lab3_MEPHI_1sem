@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+
 #include "stack.h"
 #include "sort.h"
 #include "io.h"
@@ -10,6 +11,9 @@
 #define ARG_NUM_FILE 3 // 2 доп. аргумента: имя аргумента и адрес файла
 #define MAX_FILENAME_LEN 262  // Максимум в Windows + 2 для \n и \0
 #define MAX_ROW_STR_LEN 1200 // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними и с нуль-терминатором
+
+// При длине стека 1 отрабатывает типа нормально, но в файл ничего не записано
+// Иначе ошибается на этапе сортировки
 
 int main(int argc, char *argv[]) {
     int inputVal = 0;
@@ -51,7 +55,8 @@ int main(int argc, char *argv[]) {
 
             sortRes = insertionSort(stack);  // Сортировка прямым включением
             //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
-            if (sortRes == MEMORY_ERR) {
+            if (sortRes == MEMORY_ERR) {  // Ошибка возникает тут
+                puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
                 continue;
             }
@@ -81,6 +86,10 @@ int main(int argc, char *argv[]) {
         if (createStack(&sorted) == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
             free(unsorted);
+            return 0;
+        }
+        if (createStack(&stack) == MEMORY_ERR) {
+            puts("Не хватает памяти при создании стека");
             return 0;
         }
         // Вводим изначальный ряд
@@ -114,16 +123,20 @@ int main(int argc, char *argv[]) {
         // Выводим изначальный ряд
         if (moveStack(unsorted, stack, stackLength(unsorted)) == MEMORY_ERR) {  // Т.к. при вводе он перевернулся
             puts("Не хватает памяти при создании стека");
-            return MEMORY_ERR;
+            deleteStack(unsorted);
+            deleteStack(sorted);
+            return 0;
         }
         while (stack->top != NULL) {
             printf("%d ", deleteElem(stack));
         }
         free(unsorted);
+        putchar('\n');
         // Выводим отсортированный ряд
-        if (moveStack(unsorted, stack, stackLength(unsorted)) == MEMORY_ERR) {  // Т.к. при вводе он перевернулся
+        if (moveStack(sorted, stack, stackLength(sorted)) == MEMORY_ERR) {  // Т.к. при вводе он перевернулся
             puts("Не хватает памяти при создании стека");
-            return MEMORY_ERR;
+            deleteStack(sorted);
+            return 0;
         }
         while (stack->top != NULL) {
             printf("%d ", deleteElem(stack));
