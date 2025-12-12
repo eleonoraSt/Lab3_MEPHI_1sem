@@ -21,8 +21,10 @@ short integerRowInput(Stack *addTo, FILE *source, FILE *save) {
         if (correctInput) {
             sprintf(strcheck, "%d", toWrite);
             if (strcmp(strbuf, strcheck)) {
-                puts("Ошибка при вводе ряда");
-                scanf("%*[^\n]\n");
+                length = strlen(rowbuf);
+                if (rowbuf[length - 1] != '\n') {
+                    fscanf(source, "%*[^\n]\n");
+                }
                 return INPUT_ERR;
             }
             if (addElem(toWrite, addTo) == MEMORY_ERR) {
@@ -35,8 +37,10 @@ short integerRowInput(Stack *addTo, FILE *source, FILE *save) {
             correctInput = sscanf(rowbufIndex, FSCANF_FORMAT, strbuf);
             continue;
         }
-        puts("Ошибка при вводе ряда");
-        scanf("%*[^\n]\n");
+        length = strlen(rowbuf);
+        if (rowbuf[length - 1] != '\n') {
+            fscanf(source, "%*[^\n]\n");
+        }
         return INPUT_ERR;
     }
     return OK;  // Вышли из цикла - ввод кончился (EOF или остались только пробельные символы), ошибок не встречено
