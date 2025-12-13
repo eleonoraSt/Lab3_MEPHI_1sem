@@ -9,12 +9,10 @@
 
 #define ARG_NUM 1  // 0 доп. аргументов
 #define ARG_NUM_FILE 3 // 2 доп. аргумента: имя аргумента и адрес файла
-#define MAX_FILENAME_LEN 262  // Максимум в Windows + 2 для \n и \0
+#define MAX_FILENAME_LEN 261  // Максимум в Windows с учётом \0 + \n перед \0
 #define MAX_ROW_STR_LEN 1200 // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними и с нуль-терминатором
 
-// Если стек длиной больше 2, говорит, что не удалось выполнить сортировку.
-// При этом первый ряд записан в файл.
-// В случае неудачной сортировки надо очищать файл
+// Сортировка слиянием делает что-то не то.
 
 int main(int argc, char *argv[]) {
     int inputVal = 0;
@@ -42,6 +40,7 @@ int main(int argc, char *argv[]) {
             }
             if (createStack(&stack) == MEMORY_ERR) {
                 puts("Не хватает памяти при создании стека");
+                fclose(rowFile);
                 continue;
             }
             puts("Введите ряд чисел через пробел");
@@ -49,19 +48,22 @@ int main(int argc, char *argv[]) {
             if (inputRes == MEMORY_ERR) {
                 puts("Не хватает памяти при создании стека");
                 deleteStack(stack);
+                fclose(rowFile);
                 continue;
             }
             if (inputRes == INPUT_ERR) {
                 puts("Ошибка ввода");
                 deleteStack(stack);
+                fclose(rowFile);
                 continue;
             }
 
             sortRes = insertionSort(stack);  // Сортировка прямым включением
             //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
-            if (sortRes == MEMORY_ERR) {  // Ошибка возникает тут
+            if (sortRes == MEMORY_ERR) {
                 puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
+                fclose(rowFile);
                 continue;
             }
 
@@ -71,6 +73,7 @@ int main(int argc, char *argv[]) {
             }
             free(stack);
             puts("Данные записаны в файл");
+            fclose(rowFile);
         }
     }
     else if (argc == ARG_NUM_FILE) {  // Передан аргумент
@@ -85,15 +88,20 @@ int main(int argc, char *argv[]) {
         }
         if (createStack(&unsorted) == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
+            fclose(rowFile);
             return 0;
         }
         if (createStack(&sorted) == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
             free(unsorted);
+            fclose(rowFile);
             return 0;
         }
         if (createStack(&stack) == MEMORY_ERR) {
             puts("Не хватает памяти при создании стека");
+            free(unsorted);
+            free(sorted);
+            fclose(rowFile);
             return 0;
         }
         // Вводим изначальный ряд
@@ -102,12 +110,14 @@ int main(int argc, char *argv[]) {
             puts("Не хватает памяти при создании стека");
             deleteStack(unsorted);
             free(sorted);
+            fclose(rowFile);
             return 0;
         }
         if (inputRes == INPUT_ERR) {
             puts("Ошибка ввода");
             deleteStack(unsorted);
             free(sorted);
+            fclose(rowFile);
             return 0;
         }
         // Вводим отсортированный ряд
@@ -116,12 +126,14 @@ int main(int argc, char *argv[]) {
             puts("Не хватает памяти при создании стека");
             deleteStack(unsorted);
             deleteStack(sorted);
+            fclose(rowFile);
             return 0;
         }
         if (inputRes == INPUT_ERR) {
             puts("Ошибка ввода");
             deleteStack(unsorted);
             deleteStack(sorted);
+            fclose(rowFile);
             return 0;
         }
         // Выводим изначальный ряд
@@ -129,6 +141,7 @@ int main(int argc, char *argv[]) {
             puts("Не хватает памяти при создании стека");
             deleteStack(unsorted);
             deleteStack(sorted);
+            fclose(rowFile);
             return 0;
         }
         while (stack->top != NULL) {
@@ -140,6 +153,7 @@ int main(int argc, char *argv[]) {
         if (moveStack(sorted, stack, stackLength(sorted)) == MEMORY_ERR) {  // Т.к. при вводе он перевернулся
             puts("Не хватает памяти при создании стека");
             deleteStack(sorted);
+            fclose(rowFile);
             return 0;
         }
         while (stack->top != NULL) {

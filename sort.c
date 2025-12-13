@@ -1,13 +1,13 @@
+#include <stdlib.h>
+
 #include "stack.h"
 #include "sort.h"
 
-#define NULL 0
-
 short insertionSort(Stack *stack) {
     Elem *current = stack->top, *compareWith = 0;
-    Stack *beforeCurrent, *afterCurrent;
+    Stack *buf;
     int bufCompareWith = 0, bufCurrent = 0, currentIndex = 0, compareWithIndex = 0;  // Индексы передаются функции moveStack
-    while (current->link != 0) {  // Не дошли до конца стека
+    while (current->link != NULL) {  // Не дошли до конца стека
         current = current->link;  // Следующий
         currentIndex++;
         compareWith = stack->top;
@@ -19,44 +19,38 @@ short insertionSort(Stack *stack) {
         if (compareWith == current) {  // Не надо двигать current
             continue;
         }
-        if (createStack(&beforeCurrent) == NULL) {
+        if (createStack(&buf) == MEMORY_ERR) {
             return MEMORY_ERR;
         }
-        if (moveStack(stack, beforeCurrent, compareWithIndex) == MEMORY_ERR) {  // Убираем до compareWith
-            deleteStack(beforeCurrent);
+        if (moveStack(stack, buf, compareWithIndex) == MEMORY_ERR) {  // Убираем до compareWith
+            deleteStack(buf);
             return MEMORY_ERR;
         }
         bufCompareWith = deleteElem(stack);  // Убираем compareWith
-        if (createStack(&afterCurrent) == NULL) {
-            deleteStack(beforeCurrent);
-            return MEMORY_ERR;
-        }
-        if (moveStack(stack, afterCurrent, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Убираем до current
-            deleteStack(beforeCurrent);
-            deleteStack(afterCurrent);
+        if (moveStack(stack, buf, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Убираем до current
+            deleteStack(buf);
             return MEMORY_ERR;
         }
         bufCurrent = deleteElem(stack);
-        if (moveStack(afterCurrent, stack, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Возвращаем после current
-            deleteStack(afterCurrent);
-            deleteStack(beforeCurrent);
+        if (moveStack(buf, stack, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Возвращаем после current
+            deleteStack(buf);
             return MEMORY_ERR;
         }
-        deleteStack(afterCurrent);
         if (addElem(bufCompareWith, stack) == MEMORY_ERR) {  // Возвращаем compareWith
-            deleteStack(beforeCurrent);
+            deleteStack(buf);
             return MEMORY_ERR;
         }
         if (addElem(bufCurrent, stack) == MEMORY_ERR) {  // Возвращаем current
-            deleteStack(beforeCurrent);
+            deleteStack(buf);
             return MEMORY_ERR;
         }
-        if (moveStack(beforeCurrent, stack, compareWithIndex) == MEMORY_ERR) {  // Возвращаем до compareWith
-            deleteStack(beforeCurrent);
+        if (moveStack(buf, stack, compareWithIndex) == MEMORY_ERR) {  // Возвращаем до compareWith
+            deleteStack(buf);
             return MEMORY_ERR;
         }
-        deleteStack(beforeCurrent);
+        deleteStack(buf);
     }
+    return OK;
 }
 
 short mergeSort(Stack *stack, int step) {
@@ -68,14 +62,14 @@ short mergeSort(Stack *stack, int step) {
     if (length == 1) {
         return OK;
     }
-    if (createStack(&firstSubstack) == NULL) {
+    if (createStack(&firstSubstack) == MEMORY_ERR) {
         return MEMORY_ERR;
     }
     if (moveStack(stack, firstSubstack, length / 2) == MEMORY_ERR) {
         deleteStack(firstSubstack);
         return MEMORY_ERR;
     }
-    if (createStack(&secondSubstack) == NULL) {
+    if (createStack(&secondSubstack) == MEMORY_ERR) {
         deleteStack(firstSubstack);
         return MEMORY_ERR;
     }
