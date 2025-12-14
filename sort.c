@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "stack.h"
 #include "sort.h"
@@ -60,6 +60,7 @@ short mergeSort(Stack *stack, int step) {
     short addFirst = 0;
     Stack *firstSubstack, *secondSubstack;
     if (length == 1) {
+        printf("%d\n", stack->top->val);
         return OK;
     }
     if (createStack(&firstSubstack) == MEMORY_ERR) {
@@ -86,7 +87,7 @@ short mergeSort(Stack *stack, int step) {
     while (firstSubstack->top != NULL || secondSubstack->top != NULL) {
         addFirst = secondSubstack->top == NULL;
         if (!addFirst && firstSubstack->top != NULL) {  // Если оба подстека ещё не кончились
-            addFirst = firstSubstack->top->val >= secondSubstack->top->val && step % 2 == 0 || firstSubstack->top < secondSubstack->top && step % 2 == 1;
+            addFirst = firstSubstack->top->val >= secondSubstack->top->val && step % 2 == 0 || firstSubstack->top->val < secondSubstack->top->val && step % 2 == 1;
         }
         if (addFirst) {
             if (addElem(deleteElem(firstSubstack), stack) == MEMORY_ERR) {

@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
                 continue;
             }
 
-            sortRes = insertionSort(stack);  // Сортировка прямым включением
-            //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
+            //sortRes = insertionSort(stack);  // Сортировка прямым включением
+            sortRes = mergeSort(stack, 0);  // Сортировка слиянием
             if (sortRes == MEMORY_ERR) {
                 puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
