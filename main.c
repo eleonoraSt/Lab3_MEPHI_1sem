@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+//#include <time.h>
 
 #include "stack.h"
 #include "sort.h"
@@ -19,6 +20,8 @@ int main(int argc, char *argv[]) {
     char filename[MAX_FILENAME_LEN], rowBuf[MAX_ROW_STR_LEN];
     FILE *rowFile = NULL;
     Stack *stack, *unsorted, *sorted;
+    //clock_t start, end;
+    //double timeTaken = 0.0;
 
     setlocale(LC_ALL, "");  // Печатать кириллицу
 
@@ -56,14 +59,17 @@ int main(int argc, char *argv[]) {
                 continue;
             }
 
+            //start = clock();
             sortRes = insertionSort(stack);  // Сортировка прямым включением
             //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
+            //end = clock();
             if (sortRes == MEMORY_ERR) {
                 puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
                 fclose(rowFile);
                 continue;
             }
+            //timeTaken = ((double) (end - start)) / CLOCKS_PER_SEC;
 
             fputc('\n', rowFile);
             while (stack->top != NULL) {
@@ -71,6 +77,8 @@ int main(int argc, char *argv[]) {
             }
             free(stack);
             puts("Данные записаны в файл");
+            //printf("На сортировки затрачено %e сек.\n", timeTaken);
+
             fclose(rowFile);
         }
     }

@@ -16,4 +16,4 @@ stack: stack.o sort.o io.o main.o
 	gcc -o stack stack.o sort.o io.o main.o
 
 clean:
-	del *.o *.exe *.txt
+	del *.o *.exe result.txt
