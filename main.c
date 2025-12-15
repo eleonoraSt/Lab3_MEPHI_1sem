@@ -8,11 +8,9 @@
 #include "io.h"
 
 #define ARG_NUM 1  // 0 доп. аргументов
-#define ARG_NUM_FILE 3 // 2 доп. аргумента: имя аргумента и адрес файла
+#define ARG_NUM_FILE 3  // 2 доп. аргумента: имя аргумента и адрес файла
 #define MAX_FILENAME_LEN 261  // Максимум в Windows с учётом \0 + \n перед \0
-#define MAX_ROW_STR_LEN 1200 // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними и с нуль-терминатором
-
-// Сортировка слиянием делает что-то не то.
+#define MAX_ROW_STR_LEN 1200  // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними и с нуль-терминатором
 
 int main(int argc, char *argv[]) {
     int inputVal = 0;
@@ -58,8 +56,8 @@ int main(int argc, char *argv[]) {
                 continue;
             }
 
-            //sortRes = insertionSort(stack);  // Сортировка прямым включением
-            sortRes = mergeSort(stack, 0);  // Сортировка слиянием
+            sortRes = insertionSort(stack);  // Сортировка прямым включением
+            //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
             if (sortRes == MEMORY_ERR) {
                 puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
@@ -76,14 +74,10 @@ int main(int argc, char *argv[]) {
             fclose(rowFile);
         }
     }
-    else if (argc == ARG_NUM_FILE) {  // Передан аргумент
-        if (strcmp(argv[1], "--file")) {  // Это не --file
-            puts("Неправильный аргумент");
-            return 0;
-        }
+    else if (argc == ARG_NUM_FILE && strcmp(argv[1], "--file") == 0) {// Передан аргумент --file
         rowFile = fopen(argv[2], "r");
-        if (rowFile == NULL) {  // Не смог открыть
-            puts("Неправильный аргумент");
+        if (rowFile == NULL) {
+            puts("Произошла ошибка при открытии файла");
             return 0;
         }
         if (createStack(&unsorted) == MEMORY_ERR) {

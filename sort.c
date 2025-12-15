@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <time.h>
 #include "stack.h"
 #include "sort.h"
 
@@ -60,7 +60,6 @@ short mergeSort(Stack *stack, int step) {
     short addFirst = 0;
     Stack *firstSubstack, *secondSubstack;
     if (length == 1) {
-        printf("%d\n", stack->top->val);
         return OK;
     }
     if (createStack(&firstSubstack) == MEMORY_ERR) {
