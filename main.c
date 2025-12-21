@@ -2,30 +2,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
-//#include <time.h>
+#include <time.h>
 
 #include "stack.h"
 #include "sort.h"
 #include "io.h"
 
-#define ARG_NUM 1  // 0 доп. аргументов
-#define ARG_NUM_FILE 3  // 2 доп. аргумента: имя аргумента и адрес файла
+#define DEFAULT_ARG_NUM 1  // 0 доп. аргументов
 #define MAX_FILENAME_LEN 261  // Максимум в Windows с учётом \0 + \n перед \0
 #define MAX_ROW_STR_LEN 1200  // 100 чисел макс. по 11 символов каждое (с учётом минуса), с пробелами между ними и с нуль-терминатором
 
 int main(int argc, char *argv[]) {
     int inputVal = 0;
-    short running = 1, length = 0;
+    short running = 1, length = 0, argIndex = 0;
     short inputRes = OK, sortRes = 0;
     char filename[MAX_FILENAME_LEN], rowBuf[MAX_ROW_STR_LEN];
     FILE *rowFile = NULL;
     Stack *stack, *unsorted, *sorted;
-    //clock_t start, end;
-    //double timeTaken = 0.0;
+
+    clock_t start = 0, end = 0;
+    double timeDiff = 0;
 
     setlocale(LC_ALL, "");  // Печатать кириллицу
 
-    if (argc == ARG_NUM) {
+    if (argc == DEFAULT_ARG_NUM) {
         while (running) {
             puts("Введите адрес файла для сохранения ряда чисел, или введите quit, чтобы закрыть программу");
             fgets(filename, MAX_FILENAME_LEN, stdin);
@@ -59,17 +59,17 @@ int main(int argc, char *argv[]) {
                 continue;
             }
 
-            //start = clock();
-            sortRes = insertionSort(stack);  // Сортировка прямым включением
-            //sortRes = mergeSort(stack, 0);  // Сортировка слиянием
-            //end = clock();
+            start = clock();
+            //  sortRes = insertionSort(stack);  // Сортировка прямым включением
+            sortRes = mergeSort(stack, 0);  // Сортировка слиянием
             if (sortRes == MEMORY_ERR) {
                 puts("Не удалось выполнить сортировку");
                 deleteStack(stack);
                 fclose(rowFile);
                 continue;
             }
-            //timeTaken = ((double) (end - start)) / CLOCKS_PER_SEC;
+            end = clock();
+            timeDiff = ((double) (end - start)) / CLOCKS_PER_SEC;
 
             fputc('\n', rowFile);
             while (stack->top != NULL) {
@@ -77,12 +77,22 @@ int main(int argc, char *argv[]) {
             }
             free(stack);
             puts("Данные записаны в файл");
-            //printf("На сортировки затрачено %e сек.\n", timeTaken);
+            printf("Затрачено секунд: %e\n", timeDiff);
 
             fclose(rowFile);
         }
     }
-    else if (argc == ARG_NUM_FILE && strcmp(argv[1], "--file") == 0) {// Передан аргумент --file
+    else {  // Переданы аргументы
+        while (argIndex < argc - 1) {  // Ищем --file
+            argIndex++;
+            if (argIndex == argc - 1) {
+                puts("Неправильный аргумент");
+                return 0;
+            }
+            if (strcmp(argv[argIndex], "--file") == 0) {
+                break;
+            }
+        }
         rowFile = fopen(argv[2], "r");
         if (rowFile == NULL) {
             puts("Произошла ошибка при открытии файла");
@@ -163,9 +173,6 @@ int main(int argc, char *argv[]) {
         }
         free(sorted);
         free(stack);
-    }
-    else {
-        puts("Неправильный аргумент");
     }
     return 0;
 }

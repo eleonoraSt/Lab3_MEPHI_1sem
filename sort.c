@@ -3,12 +3,10 @@
 #include "sort.h"
 
 short insertionSort(Stack *stack) {
-    Elem *current = stack->top, *compareWith = 0;
+    Elem *current = stack->top->link, *compareWith = 0;  // Сортировать один элемент не имеет смысла
     Stack *buf;
-    int bufCompareWith = 0, bufCurrent = 0, currentIndex = 0, compareWithIndex = 0;  // Индексы передаются функции moveStack
-    while (current->link != NULL) {  // Не дошли до конца стека
-        current = current->link;  // Следующий
-        currentIndex++;
+    int bufCompareWith = 0, bufCurrent = 0, currentIndex = 1, compareWithIndex = 0;  // Индексы передаются функции moveStack
+    while (current != NULL) {  // Не дошли до конца стека
         compareWith = stack->top;
         compareWithIndex = 0;
         while (compareWith != current && compareWith->val <= current->val) {
@@ -16,8 +14,11 @@ short insertionSort(Stack *stack) {
             compareWithIndex++;
         }
         if (compareWith == current) {  // Не надо двигать current
+            current = current->link;
+            currentIndex++;
             continue;
         }
+        current = current->link;  // Заранее, потому что использоваться уже не будет, зато сотрётся
         if (createStack(&buf) == MEMORY_ERR) {
             return MEMORY_ERR;
         }
@@ -30,7 +31,7 @@ short insertionSort(Stack *stack) {
             deleteStack(buf);
             return MEMORY_ERR;
         }
-        bufCurrent = deleteElem(stack);
+        bufCurrent = deleteElem(stack);  // Убираем current
         if (moveStack(buf, stack, currentIndex - compareWithIndex - 1) == MEMORY_ERR) {  // Возвращаем после current
             deleteStack(buf);
             return MEMORY_ERR;
@@ -48,6 +49,7 @@ short insertionSort(Stack *stack) {
             return MEMORY_ERR;
         }
         deleteStack(buf);
+        currentIndex++;
     }
     return OK;
 }
